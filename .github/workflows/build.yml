@@ -11,38 +11,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-        clang lld bmake bison flex \
-        libarchive-dev libssl-dev \
-        python3 xorriso mtools
-    
-    - name: Fix permissions
-      run: |
-        find . -name "*.sh" -exec chmod +x {} \;
-    
-    - name: Build world
-      run: |
-        make buildworld \
-        TARGET=amd64 TARGET_ARCH=amd64 \
-        CC=clang CXX=clang++ CPP=clang-cpp
-    
-    - name: Build kernel
-      run: |
-        make buildkernel KERNCONF=GENERIC \
-        TARGET=amd64 TARGET_ARCH=amd64 \
-        CC=clang CXX=clang++ CPP=clang-cpp
-
-    - name: Build release
-      run: |
-        make release KERNCONF=GENERIC \
-        TARGET=amd64 TARGET_ARCH=amd64 \
-        NODOC=yes NOPORTS=yes
+    - name: Build in FreeBSD VM
+      uses: vmactions/freebsd-vm@v1
+      with:
+        usesh: true
+        mem: 8192
+        run: |
+          pkg install -y gmake
+          make buildworld TARGET=amd64
+          make buildkernel KERNCONF=GENERIC TARGET=amd64
+          make release KERNCONF=GENERIC TARGET=amd64 NODOC=yes NOPORTS=yes
     
     - name: Upload ISO
       uses: actions/upload-artifact@v4
       with:
         name: irid-iso
-        path: /usr/obj/**/release/*.iso
+        path: /usr/obj/usr/src/amd64.amd64/release/disc1.iso
