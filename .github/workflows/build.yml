@@ -16,11 +16,12 @@ jobs:
       with:
         usesh: true
         mem: 8192
-        run: |
+        prepare: |
           pkg install -y gmake
-          make buildworld TARGET=amd64
-          make buildkernel KERNCONF=GENERIC TARGET=amd64
-          make release KERNCONF=GENERIC TARGET=amd64 NODOC=yes NOPORTS=yes
+        run: |
+          make buildworld TARGET=amd64 TARGET_ARCH=amd64
+          make buildkernel KERNCONF=GENERIC TARGET=amd64 TARGET_ARCH=amd64
+          make release KERNCONF=GENERIC TARGET=amd64 TARGET_ARCH=amd64 NODOC=yes NOPORTS=yes
     
     - name: Upload ISO
       uses: actions/upload-artifact@v4
