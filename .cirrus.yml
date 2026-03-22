@@ -216,3 +216,20 @@ precommit_task:
   post_script:
     - df -m
     - du -m -s /usr/obj
+
+build_release_task:
+  compute_engine_instance:
+    platform: freebsd
+    image_project: freebsd-org-cloud-dev
+    image: freebsd-15-0-release-amd64-ufs
+    cpu: 8
+    memory: 16G
+    disk: 80
+  timeout_in: 240m
+  build_script:
+    - make buildworld TARGET=amd64 TARGET_ARCH=amd64
+    - make buildkernel KERNCONF=GENERIC TARGET=amd64
+    - make release KERNCONF=GENERIC TARGET=amd64 NODOC=yes NOPORTS=yes
+  artifacts:
+    path: /usr/obj/usr/src/amd64.amd64/release/disc1.iso
+    name: irid-iso
