@@ -14,17 +14,13 @@ jobs:
     - name: Build in FreeBSD VM
       uses: vmactions/freebsd-vm@v1
       with:
+        release: "15.0"
         usesh: true
-        mem: 8192
-        prepare: |
-          pkg install -y gmake
+        sync: rsync
+        copyback: false
+        prepare: pkg install -y gmake
         run: |
-          make buildworld TARGET=amd64 TARGET_ARCH=amd64
-          make buildkernel KERNCONF=GENERIC TARGET=amd64 TARGET_ARCH=amd64
-          make release KERNCONF=GENERIC TARGET=amd64 TARGET_ARCH=amd64 NODOC=yes NOPORTS=yes
-    
-    - name: Upload ISO
-      uses: actions/upload-artifact@v4
-      with:
-        name: irid-iso
-        path: /usr/obj/usr/src/amd64.amd64/release/disc1.iso
+          pwd
+          ls
+          make buildkernel KERNCONF=GENERIC \
+          TARGET=amd64 TARGET_ARCH=amd64
