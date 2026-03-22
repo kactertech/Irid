@@ -15,16 +15,21 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git make gcc g++ bsdmainutils qemu-utils
+          sudo apt-get install -y build-essential bsdmainutils qemu-utils git
 
-      - name: Build Irid world + kernel
+      - name: Prepare Irid-src
         run: |
-          cd Irid/Irid-src
-          # Build world
+          # Zakładamy, że workflow jest w Irid-src/.github/workflows
+          cd ../../Irid/Irid-src
+          chmod -R +x .
+
+      - name: Build Irid OS
+        run: |
+          cd ../../Irid/Irid-src
+          # Build world i kernel
           make buildworld
-          # Build kernel
           make buildkernel
-          # Optional: installworld do DESTDIR
+          # Optional: zainstaluj world do tymczasowego folderu
           mkdir -p /tmp/irid
           make installworld DESTDIR=/tmp/irid
 
@@ -32,7 +37,7 @@ jobs:
         run: |
           cd /tmp
           tar czf irid-os.tar.gz irid
-          
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
