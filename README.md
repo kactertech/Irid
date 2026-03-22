@@ -1,5 +1,5 @@
 # Irid 
-### Version 0.0.2 ALPHA
+### Version 0.0.2 ALPHA "Violetta"
 ### (c) Irith Team, Poland, MMXXVI
 
 Irid is an operating system based on FreeBSD, designed to be simple, private and user-friendly
