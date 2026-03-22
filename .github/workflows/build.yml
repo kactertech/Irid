@@ -7,20 +7,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Build in FreeBSD VM
-      uses: vmactions/freebsd-vm@v1
-      with:
-        release: "15.0"
-        usesh: true
-        sync: rsync
-        copyback: false
-        prepare: pkg install -y gmake
-        run: |
-          pwd
-          ls
-          make buildkernel KERNCONF=GENERIC \
-          TARGET=amd64 TARGET_ARCH=amd64
+      - uses: actions/checkout@v4
+      
+      - name: Test FreeBSD
+        uses: cross-platform-actions/action@v0.25.0
+        with:
+          operating_system: freebsd
+          version: '15.0'
+          run: |
+            sudo pkg install -y gmake
+            make buildkernel KERNCONF=GENERIC \
+            TARGET=amd64 TARGET_ARCH=amd64
