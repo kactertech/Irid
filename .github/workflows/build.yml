@@ -1,0 +1,23 @@
+name: Build Irid
+
+on:
+    push:
+        branches: [ main ]
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v3
+
+        - name: Install depencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y clang lld bmake
+
+        - name: Build Irid kernel
+        run: |
+            cd $GITHUB_WORKSPACE
+            make buildkernel KERNCONF=GENERIC \
+            TARGET=amd64 TARGET_ARCH=amd64 \
+            CC=clang CXX=clang++ CPP=clang-cpp
