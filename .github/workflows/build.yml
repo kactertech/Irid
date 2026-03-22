@@ -1,21 +1,40 @@
-name: Build Irid
+name: Build Irid OS
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-irid:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Test FreeBSD
-        uses: cross-platform-actions/action@v0.25.0
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git make gcc g++ bsdmainutils qemu-utils
+
+      - name: Build Irid world + kernel
+        run: |
+          cd Irid/Irid-src
+          # Build world
+          make buildworld
+          # Build kernel
+          make buildkernel
+          # Optional: installworld do DESTDIR
+          mkdir -p /tmp/irid
+          make installworld DESTDIR=/tmp/irid
+
+      - name: Archive built OS
+        run: |
+          cd /tmp
+          tar czf irid-os.tar.gz irid
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
         with:
-          operating_system: freebsd
-          version: '15.0'
-          run: |
-            sudo pkg install -y gmake
-            make buildkernel KERNCONF=GENERIC \
-            TARGET=amd64 TARGET_ARCH=amd64
+          name: irid-os
+          path: /tmp/irid-os.tar.gz
